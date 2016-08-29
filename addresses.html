@@ -1,0 +1,50 @@
+<html>
+<head>
+
+</head>
+<body>
+
+<div id="app">
+
+    <div v-for="address in addresses">
+        Previous Address {{ $index + 1 }}
+        <input name="address[{{ $index }}][address_line_1]">
+        <input name="address[{{ $index }}][address_line_2]">
+        <select name="previous_personal_address[{{ $index }}][country]">
+            <option value="" selected="selected">Select Country</option>
+            <option value="1">Country 1</option>
+            <option value="2">Country 2</option>
+        </select>
+        <button v-if="addresses.length > 1" @click="removeAddress($index)">Remove</button>
+    </div>
+    <button @click="addAddress" v-if="addresses.length <= 2">Add Address</button>
+
+</div>
+
+<script src="js/vue.js"></script>
+<script>
+
+    new Vue({
+        el: '#app',
+        data: {
+            addresses: [
+                { }
+            ]
+        },
+        methods: {
+            addAddress: function() {
+                this.addresses.push({});
+            },
+            removeAddress: function(index) {
+                this.addresses.splice(index, 1);
+            }
+        },
+        computed: {
+
+        }
+    });
+
+</script>
+
+</body>
+</html>

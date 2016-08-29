@@ -1,0 +1,168 @@
+<html>
+<head>
+
+</head>
+<body>
+
+<div id="app">
+    <fieldset>
+        <input v-model="newRecordingTitle">
+        <input v-model="newRecordingMap">
+        <input v-model="newRecordingPlayers">
+        <button @click="addRecording($index)">Add Recording</button>
+    </fieldset>
+
+    <table style="width: 600px;">
+        <thead>
+            <tr>
+                <th>
+                    <a @click="orderColumn('title')">
+                        Game Name
+                        <span v-if="showOrderIcon('title')">{{orderByIcon}}</span>
+                    </a>
+                </th>
+                <th>
+                    <a @click="orderColumn('map')">
+                        Map
+                        <span v-if="showOrderIcon('map')">{{orderByIcon}}</span>
+                    </a>
+                </th>
+                <th>
+                    <a @click="orderColumn('players')">
+                        Players
+                        <span v-if="showOrderIcon('players')">{{orderByIcon}}</span>
+                    </a>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="recording in recordings">
+                <td>{{ recording.title }}</td>
+                <td>{{ recording.map }}</td>
+                <td>{{ recording.players }}</td>
+            </tr>
+            <tr v-if="recordings.length <= 0">
+                <td colspan="3">Sorry, no recordings</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<script src="js/vue.js"></script>
+<script>
+
+    new Vue({
+        el: '#app',
+        data: {
+            newRecordingTitle: '',
+            newRecordingMap: '',
+            newRecordingPlayers: '',
+            sortBy: 'title',
+            orderBy: 'DESC',
+            orderByIcon: '\u25B2',
+            recordings: [
+                {
+                    title: 'Z Test Name',
+                    map: 'Gods of War',
+                    players: 2
+                },
+                {
+                    title: 'A Test Name',
+                    map: 'King of The Hill',
+                    players: 1
+                },
+                {
+                    title: 'In Between Name',
+                    map: 'Metal Hell',
+                    players: 6
+                }
+            ]
+        },
+        computed: function() {
+            this.recordings = this.methods.orderColumn('players');
+        },
+        methods: {
+            addRecording: function () {
+                var title = this.newRecordingTitle.trim();
+                var map = this.newRecordingMap.trim();
+                var players = this.newRecordingPlayers.trim();
+                if (title.length && map.length && players.length) {
+
+                    var recording = {
+                        title: title,
+                        map: map,
+                        players: players
+                    };
+                    this.recordings.push(recording);
+
+                    this.newRecordingTitle = '';
+                    this.newRecordingMap = '';
+                    this.newRecordingPlayers = '';
+                }
+            },
+
+            showOrderIcon: function(column) {
+                console.log(column == this.sortBy);
+                return column == this.sortBy ? true : false;
+            },
+
+            orderColumn: function (column) {
+
+                var columnKey = column;
+
+                var orderBy = this.orderBy;
+
+                switch (columnKey) {
+                    case 'title':
+                    case 'map':
+                        this.recordings = this.recordings.sort(sortText);
+                        break;
+                    case 'players':
+                        this.recordings = this.recordings.sort(sortNumbers);
+                        break;
+                }
+
+                this.sortBy = columnKey;
+                if (this.orderBy == 'ASC') {
+                    this.orderBy = 'DESC';
+                    this.orderByIcon = '\u25BC';
+                } else {
+                    this.orderBy = 'ASC';
+                    this.orderByIcon = '\u25B2';
+                }
+
+                function sortNumbers(a, b) {
+
+                    if (a[columnKey] < b[columnKey]) {
+                        return orderBy == 'ASC' ? 1 : -1;
+                    }
+                    if (a[columnKey] > b[columnKey]) {
+                        return orderBy == 'ASC' ? -1 : 1;
+                    }
+                    // a must be equal to b
+                    return 0;
+                }
+
+                function sortText(a, b) {
+
+                    var nameA = a[columnKey].toUpperCase(); // ignore upper and lowercase
+                    var nameB = b[columnKey].toUpperCase(); // ignore upper and lowercase
+
+                    if (nameA < nameB) {
+                        return orderBy == 'ASC' ? 1 : -1;
+                    }
+                    if (nameA > nameB) {
+                        return orderBy == 'ASC' ? -1 : 1;
+                    }
+
+                    // names must be equal
+                    return 0;
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+<html>
+<head>
+
+</head>
+<body>
+
+<div id="app">
+
+    <select name="" v-model="type">
+        <option value="1">Type 1</option>
+        <option value="2">Type 2</option>
+    </select>
+    {{ type }}
+    <div v-show="showIfType(1)">
+        <input name="" value="1">
+    </div>
+    <div v-show="showIfType(2)">
+        <input name="" value="2">
+    </div>
+    <div v-show="showIfType(3)">
+        <input name="" value="3">
+    </div>
+    <div v-show="showIfType(1, 2)">
+        <input name="" value="1, 2">
+    </div>
+
+</div>
+
+<script src="js/vue.js"></script>
+<script>
+
+    new Vue({
+        el: '#app',
+        data: {
+            type: 1
+        },
+        methods: {
+            showIfType: function() {
+
+                // quick way to convert the 'arguments' object to an array
+                argumentsArray = [].slice.apply(arguments);
+
+                if (argumentsArray.indexOf(parseInt(this.type)) !== -1) {
+                    return true;
+                }
+            }
+        }
+    });
+
+</script>
+
+</body>
+</html>

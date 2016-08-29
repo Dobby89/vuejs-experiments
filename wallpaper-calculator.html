@@ -1,0 +1,109 @@
+<html>
+<head>
+
+</head>
+<body>
+
+<div id="app">
+
+    <!--http://vuejs.org/guide/forms.html#Select-Options-->
+
+    <select v-model="selectedUnit">
+        <option v-for="unit in units" :selected="unit.selected" :value="$index">{{ unit.optionTitle }}</option>
+    </select>
+    {{ selectedUnit }}
+
+    <br>
+    <br>
+    <br>
+
+    <div>Areas To Cover</div>
+    <div v-for="area in areasToCover">
+        <div>{{ area.title }}</div>
+        <label>Length ({{ unitSuffix }})</label>
+        <input v-model="area.length">
+        <label>Height ({{ unitSuffix }})</label>
+        <input v-model="area.height">
+    </div>
+
+    <br>
+    <br>
+
+    <div>Areas To Exclude</div>
+    <div v-for="area in areasToExclude">
+        <label>{{ area.title }} (sq. {{ unitSuffix }})</label>
+        <input v-model="area.value">
+    </div>
+
+    <button @click="calculateRolls">Calculate</button>
+    <div>You will need {{ numRolls }} rolls</div>
+</div>
+
+<script src="js/vue.js"></script>
+<script>
+
+    new Vue({
+        el: '#app',
+        data: {
+            units: [
+                { optionTitle: 'Metric (Metres)', suffix: 'm', coverage: 5.3265, selected: true },
+                { optionTitle: 'Imperial (Feet)', suffix: 'ft', coverage: 57.75 }
+            ],
+            selectedUnit: 0,
+            unitSuffix: '',
+            areasToCover: [
+                { title: 'Wall 1', length: null, height: null },
+                { title: 'Wall 2', length: null, height: null },
+                { title: 'Wall 3', length: null, height: null },
+                { title: 'Wall 4', length: null, height: null },
+            ],
+            areaToCover: 0,
+            areasToExclude: [
+                { title: 'Door', value: null },
+                { title: 'Window', value: null },
+                { title: 'Other', value: null }
+            ],
+            areaToExclude: 0,
+            coverRequired: 0,
+            rollThreshold: 0.8,
+            numRolls: 0
+        },
+        methods: {
+            calculateRolls: function() {
+
+                var coverage = this.units[this.selectedUnit].coverage;
+                var rollThreshold = this.rollThreshold
+
+                var areaToCover = 0;
+                for (var i=0; i<this.areasToCover.length; i++) {
+                    areaToCover += (this.areasToCover[i].length * this.areasToCover[i].height);
+                }
+                this.areaToCover = areaToCover;
+
+                for (var i=0; i<this.areasToExclude.length; i++) {
+                    this.areaToExclude += (this.areasToExclude[i].value);
+                }
+                console.log(this.areaToExclude);
+
+                this.coverRequired = this.areaToCover - this.areaToExclude;
+
+                var numRolls = parseFloat(this.coverRequired / coverage);
+                if (parseFloat(numRolls - Math.floor(numRolls)) > rollThreshold) {
+                    numRolls = Math.ceil(numRolls) + 1;
+                } else {
+                    numRolls = Math.ceil(numRolls);
+                }
+                this.numRolls = numRolls;
+            }
+        },
+        computed: {
+            unitSuffix: function() {
+                return this.units[this.selectedUnit].suffix;
+            }
+        }
+    });
+
+</script>
+
+</body>
+</html>
