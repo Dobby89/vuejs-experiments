@@ -13,9 +13,7 @@
     </select>
     {{ selectedUnit }}
 
-    <br>
-    <br>
-    <br>
+    <hr>
 
     <div>Areas To Cover</div>
     <div v-for="area in areasToCover">
@@ -26,8 +24,7 @@
         <input v-model="area.height">
     </div>
 
-    <br>
-    <br>
+    <hr>
 
     <div>Areas To Exclude</div>
     <div v-for="area in areasToExclude">
@@ -36,6 +33,9 @@
     </div>
 
     <button @click="calculateRolls">Calculate</button>
+
+    <hr>
+
     <div>You will need {{ numRolls }} rolls</div>
 </div>
 
@@ -72,7 +72,7 @@
             calculateRolls: function() {
 
                 var coverage = this.units[this.selectedUnit].coverage;
-                var rollThreshold = this.rollThreshold
+                var rollThreshold = this.rollThreshold;
 
                 var areaToCover = 0;
                 for (var i=0; i<this.areasToCover.length; i++) {
