@@ -10,14 +10,14 @@
         Previous Address {{ $index + 1 }}
         <input name="address[{{ $index }}][address_line_1]">
         <input name="address[{{ $index }}][address_line_2]">
-        <select name="previous_personal_address[{{ $index }}][country]">
+        <select name="address[{{ $index }}][country]">
             <option value="" selected="selected">Select Country</option>
             <option value="1">Country 1</option>
             <option value="2">Country 2</option>
         </select>
         <button v-if="addresses.length > 1" @click="removeAddress($index)">Remove</button>
     </div>
-    <button @click="addAddress" v-if="addresses.length <= 2">Add Address</button>
+    <button @click="addAddress" v-if="addresses.length < maxAddresses">Add Address</button>
 
 </div>
 
@@ -27,9 +27,8 @@
     new Vue({
         el: '#app',
         data: {
-            addresses: [
-                { }
-            ]
+            addresses: [],
+            maxAddresses: 3
         },
         methods: {
             addAddress: function() {
@@ -38,6 +37,9 @@
             removeAddress: function(index) {
                 this.addresses.splice(index, 1);
             }
+        },
+        ready: function() {
+            this.addresses.push({}); // create the first address
         },
         computed: {
 
