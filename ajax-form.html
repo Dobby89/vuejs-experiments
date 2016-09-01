@@ -6,7 +6,7 @@
 
 <div id="app">
 
-    <form @submit.prevent="processForm" method="post" action="'/vuejs-experiments/contact-form.php'">
+    <form @submit.prevent="processForm" method="post">
         <div v-if="errorMessage" style="color: red;">{{ errorMessage }}</div>
         <div v-if="successMessage" style="color: darkgreen;">{{ successMessage }}</div>
         <div>
