@@ -1,0 +1,81 @@
+<html>
+<head>
+
+</head>
+<body>
+
+<div id="app">
+
+    <form @submit.prevent="processForm" method="post" action="'/vuejs-experiments/contact-form.php'">
+        <div v-if="errorMessage" style="color: red;">{{ errorMessage }}</div>
+        <div v-if="successMessage" style="color: darkgreen;">{{ successMessage }}</div>
+        <div>
+            <input name="name" type="text">
+            <span v-if="fieldErrors.name" style="color: red;">{{ fieldErrors.name }}</span>
+        </div>
+        <div>
+            <input name="email" type="text">
+            <span v-if="fieldErrors.email" style="color: red;">{{ fieldErrors.email }}</span>
+        </div>
+        <div>
+            <textarea name="message"></textarea>
+            <span v-if="fieldErrors.message" style="color: red;">{{ fieldErrors.message }}</span>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+    {{ fieldErrors | json }}
+</div>
+
+<script src="js/vue.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script>
+
+    new Vue({
+        el: '#app',
+        data: {
+            errorMessage: '',
+            successMessage: '',
+            fieldErrors: []
+        },
+        methods: {
+            processForm: function() {
+                var data = $('form').serialize();
+
+                vm = this;
+
+                $.ajax({
+                    url: '/vuejs-experiments/contact-form.php',
+                    method: 'post',
+                    dataType: 'json',
+                    data: data,
+                    beforeSend: function () {
+                        vm.errorMessage = '';
+                        vm.successMessage = ''
+                        vm.fieldErrors = [];
+                    },
+                    success: function (json) {
+
+                        if (json.error) {
+                            vm.fieldErrors = json.error;
+                            vm.errorMessage = json.errorMessage;
+                        }
+                        if (json.success) {
+                            vm.successMessage = json.success;
+                        }
+
+                    },
+                    complete: function () {
+
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                    }
+                })
+            }
+        }
+    });
+
+</script>
+
+</body>
+</html>
