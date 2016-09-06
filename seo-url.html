@@ -1,0 +1,59 @@
+<html>
+<head>
+
+</head>
+<body>
+
+<div id="app" style="padding: 50px;">
+
+    <div style="margin-bottom: 10px;">
+        Title<br>
+        <input v-model="title">
+    </div>
+    <div>
+        URL Path<br />
+        example.com/category/<b>{{ title | seourl }}</b><br />
+        <input value="{{ title | seourl }}">
+    </div>
+
+
+</div>
+
+<script src="js/vue.js"></script>
+<script>
+
+    Vue.filter('seourl', function (value) {
+
+        // make the url lowercase
+        var encodedUrl = value.toString().toLowerCase();
+
+        // replace & with and
+        encodedUrl = encodedUrl.split(/\&+/).join("-and-");
+
+        // remove invalid characters
+        encodedUrl = encodedUrl.split(/[^a-z0-9]/).join("-");
+
+        // remove duplicates
+        encodedUrl = encodedUrl.split(/-+/).join("-");
+
+        // trim leading & trailing characters
+        encodedUrl = encodedUrl.trim('-');
+
+        return encodedUrl;
+    });
+
+    new Vue({
+        el: '#app',
+        data: {
+            title: '',
+            url: ''
+        },
+        methods: {
+
+        }
+    });
+
+</script>
+
+</body>
+</html>
