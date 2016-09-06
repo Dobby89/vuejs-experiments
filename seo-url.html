@@ -6,14 +6,19 @@
 
 <div id="app" style="padding: 50px;">
 
-    <div style="margin-bottom: 10px;">
+    <div style="margin-bottom: 20px;">
         Title<br>
         <input v-model="title">
     </div>
-    <div>
+    <div style="margin-bottom: 20px;">
         URL Path<br />
         example.com/category/<b>{{ title | seourl }}</b><br />
         <input value="{{ title | seourl }}">
+    </div>
+    <div style="margin-bottom: 20px;">
+        URL Path (retain after clearing)<br />
+        example.com/category/<b>{{ title | seourl }}</b><br />
+        <input v-bind:value="title | seourl">
     </div>
 
 
