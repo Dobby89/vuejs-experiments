@@ -6,13 +6,11 @@
 
 <div id="app">
 
-    <megamenu-list :items="menuItems"></megamenu-list>
+    <div class="js-menu-builder">
+        <megamenu-list :items="menuItems"></megamenu-list>
+    </div>
 
-    <ol class="js-menu-builder">
-        <li>Sample</li>
-        <li>Sample</li>
-        <li>Sample</li>
-    </ol>
+    <button @click="addItem">Add New Item</button>
 </div>
 
 <template id="js-megamenu-list-template">
@@ -20,6 +18,7 @@
         <li v-for="item in items">
             <div>
                 {{ item.title }}
+                <button @click="deleteItem(item)">Remove</button>
             </div>
             <megamenu-list v-if="item.children" :items="item.children"></megamenu-list>
         </li>
@@ -28,6 +27,7 @@
 
 <script src="js/vue.js"></script>
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="//code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
 <script src="js/jquery.mjs.nestedSortable.js"></script>
 <script>
 
@@ -42,7 +42,15 @@
                     title: 'Item 2.1'
                 },
                 {
-                    title: 'Item 2.2'
+                    title: 'Item 2.2',
+                    children: [
+                        {
+                            title: 'Item 2.2.1'
+                        },
+                        {
+                            title: 'Item 2.2.2'
+                        }
+                    ]
                 }
             ]
         }
@@ -50,36 +58,82 @@
 
     Vue.component('megamenu-list', {
         template: '#js-megamenu-list-template',
-        props: ['items']
+        props: ['items'],
+        methods: {
+            deleteItem: function (item) {
+
+                var itemIndex = this.items.indexOf(item);
+                var itemChildren = item.children.reverse();
+
+                if (itemChildren) {
+                    for (var i = 0; i < itemChildren.length; i++) {
+                        // move the children up so they aren't deleted
+                        this.items.splice(itemIndex, 0, itemChildren[i]);
+                    }
+                }
+
+                this.items.$remove(item);
+            },
+        }
     });
     new Vue({
         el: '#app',
         data: {
             menuItems: menuItems
+        },
+        methods: {
+            addItem: function() {
+                var newItem = {title: 'Item'};
+
+                this.menuItems.push(newItem);
+            },
+        },
+        ready() {
+            var vm = this;
+            $('.js-menu-builder > ol').nestedSortable({
+                handle: 'div',
+                items: 'li',
+                toleranceElement: '> div',
+                change: function() {
+//                    console.log(vm.menuItems);
+
+                    var hierarchy = $('ol.sortable').nestedSortable('toHierarchy', {startDepthCount: 0})
+                    console.log(dump(hierarchy));
+                }
+            });
         }
     });
 
 
+    function dump(arr, level) {
+        var dumped_text = "";
+        if(!level) level = 0;
+
+        //The padding given at the beginning of the line.
+        var level_padding = "";
+        for(var j=0;j<level+1;j++) level_padding += "    ";
+
+        if(typeof(arr) == 'object') { //Array/Hashes/Objects
+            for(var item in arr) {
+                var value = arr[item];
+
+                if(typeof(value) == 'object') { //If it is an array,
+                    dumped_text += level_padding + "'" + item + "' ...\n";
+                    dumped_text += dump(value,level+1);
+                } else {
+                    dumped_text += level_padding + "'" + item + "' => \"" + value + "\"\n";
+                }
+            }
+        } else { //Strings/Chars/Numbers etc.
+            dumped_text = "===>"+arr+"<===("+typeof(arr)+")";
+        }
+        return dumped_text;
+    }
+
+
     $(document).ready(function() {
 
-        console.log('here');
-
-        var ns = $('.js-menu-builder').nestedSortable({
-            forcePlaceholderSize: true,
-            handle: 'div',
-            helper:	'clone',
-            items: 'li',
-            opacity: .6,
-            placeholder: 'placeholder',
-            revert: 250,
-            tabSize: 25,
-            tolerance: 'pointer',
-            toleranceElement: '> div',
-            maxLevels: 3, // TODO: Set dynamically
-            isTree: true,
-            expandOnHover: 700,
-            startCollapsed: false
-        });
+        console.log('doc ready');
     });
 
 </script>
