@@ -1,0 +1,88 @@
+<html>
+<head>
+
+</head>
+<body>
+
+<div id="app">
+
+    <megamenu-list :items="menuItems"></megamenu-list>
+
+    <ol class="js-menu-builder">
+        <li>Sample</li>
+        <li>Sample</li>
+        <li>Sample</li>
+    </ol>
+</div>
+
+<template id="js-megamenu-list-template">
+    <ol>
+        <li v-for="item in items">
+            <div>
+                {{ item.title }}
+            </div>
+            <megamenu-list v-if="item.children" :items="item.children"></megamenu-list>
+        </li>
+    </ol>
+</template>
+
+<script src="js/vue.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="js/jquery.mjs.nestedSortable.js"></script>
+<script>
+
+    var menuItems = [
+        {
+            title: 'Item 1'
+        },
+        {
+            title: 'Item 2',
+            children: [
+                {
+                    title: 'Item 2.1'
+                },
+                {
+                    title: 'Item 2.2'
+                }
+            ]
+        }
+    ];
+
+    Vue.component('megamenu-list', {
+        template: '#js-megamenu-list-template',
+        props: ['items']
+    });
+    new Vue({
+        el: '#app',
+        data: {
+            menuItems: menuItems
+        }
+    });
+
+
+    $(document).ready(function() {
+
+        console.log('here');
+
+        var ns = $('.js-menu-builder').nestedSortable({
+            forcePlaceholderSize: true,
+            handle: 'div',
+            helper:	'clone',
+            items: 'li',
+            opacity: .6,
+            placeholder: 'placeholder',
+            revert: 250,
+            tabSize: 25,
+            tolerance: 'pointer',
+            toleranceElement: '> div',
+            maxLevels: 3, // TODO: Set dynamically
+            isTree: true,
+            expandOnHover: 700,
+            startCollapsed: false
+        });
+    });
+
+</script>
+
+</body>
+</html>
