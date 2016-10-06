@@ -1,0 +1,101 @@
+<html>
+<head>
+<style type="text/css">
+    ul.sort {
+        list-style: none;
+        padding: 0;
+        margin: 30px;
+    }
+
+    li.sort-item {
+        display: block;
+        padding: 10px;
+        margin: 0 10px 10px 0;
+        background: #EFEFEF;
+        border: solid 1px #CCC;
+    }
+
+    .sort-ghost {
+        opacity: 0.3;
+        transition: all 0.7s ease-out;
+    }
+</style>
+</head>
+<body>
+
+<div id="app">
+    <dragdrop></dragdrop>
+</div>
+
+<template id="dragdrop">
+    <ul id="sort" class="sort cf">
+        <li class="sort-item" order="{{ item.order }}" v-for="item in list">
+            {{ item.name }} - ({{ item.order}})
+
+            <button @click="deleteItem(item)">Remove</button>
+        </li>
+    </ul>
+    <button @click="addItem()">Add Item</button>
+</template>
+
+<script src="js/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js"></script>
+<script>
+
+    new Vue({
+        el: '#app',
+        template: '#dragdrop',
+        data() {
+            return {
+                list: [
+                    {name: 'Item 1', id: 1, order: 1},
+                    {name: 'Item 2', id: 2, order: 2},
+                    {name: 'Item 3', id: 3, order: 3},
+                    {name: 'Item 4', id: 4, order: 4},
+                    {name: 'Item 5', id: 5, order: 5},
+                    {name: 'Item 6', id: 6, order: 6}
+                ],
+            }
+        },
+        ready() {
+            var vm = this;
+            Sortable.create(document.getElementById('sort'), {
+                draggable: 'li.sort-item',
+                ghostClass: "sort-ghost",
+                animation: 80,
+                onUpdate: function(evt) {
+                    console.log('dropped (Sortable)');
+                    vm.reorder(evt.oldIndex, evt.newIndex);
+                }
+            });
+        },
+        methods: {
+            reorder: function (oldIndex, newIndex) {
+                // move the item in the underlying array
+                this.list.splice(newIndex, 0, this.list.splice(oldIndex, 1)[0]);
+                // update order property based on position in array
+                this.list.forEach(function (item, index) {
+                    item.order = index;
+                });
+            },
+            deleteItem: function (item) {
+                var confirm = window.confirm("Are you sure you want to delete?");
+                console.log(confirm);
+                if (confirm == true) {
+                    this.list.$remove(item);
+                }
+            },
+            addItem: function () {
+
+                var index = this.list.length + 1;
+                var newItem = {name: 'Item ' + index , id: index, order: index};
+
+                this.list.push(newItem);
+            }
+        }
+    });
+
+</script>
+
+</body>
+</html>
