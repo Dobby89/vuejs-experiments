@@ -6,12 +6,55 @@
 
 <div id="app">
 
+    <url-list :urls="[
+        {
+            id: 1,
+            url: 'url-slug-1'
+        },
+        {
+            id: 2,
+            url: 'url-slug-2'
+        }
+    ]"></url-list>
+
+    <url-list :urls="[
+        {
+            id: 3,
+            url: 'url-slug-3'
+        },
+        {
+            id: 4,
+            url: 'url-slug-4'
+        }
+    ]"></url-list>
+
     <div class="js-menu-builder">
         <megamenu-list :items="menuItems"></megamenu-list>
     </div>
 
     <button @click="addItem">Add New Item</button>
 </div>
+
+
+
+<template id="js-url-list-template">
+    <div>
+        <input type="search" placeholder="Filter Links" v-model="pageFilter">
+        <div v-for="url in urls" v-if="!url.hidden">
+            <label>
+                <input type="checkbox" :value="url.id" v-model="selectedUrls">
+                {{ url.url }}
+            </label>
+        </div>
+
+        <label>
+            <input type="checkbox" v-model="selectAll">
+            Select All
+        </label>
+        <button @click="addUrl">Add Selected</button>
+        {{ selectedUrls }}
+    </div>
+</template>
 
 <template id="js-megamenu-list-template">
     <ol>
@@ -31,30 +74,44 @@
 <script src="js/jquery.mjs.nestedSortable.js"></script>
 <script>
 
-    var menuItems = [
-        {
-            title: 'Item 1'
+    Vue.component('url-list', {
+        template: '#js-url-list-template',
+        props: ['urls'],
+        data: function() {
+            return {
+                pageFilter: '',
+                selectedUrls: [],
+            }
         },
-        {
-            title: 'Item 2',
-            children: [
-                {
-                    title: 'Item 2.1'
+        methods: {
+            addUrl: function () {
+
+//                var selectedUrls = [];
+//                selectedUrls = this.urls.filter(function(url) {
+//                    return url.checked;
+//                });
+//                console.log(selectedUrls.length);
+            },
+        },
+        computed: {
+            selectAll: {
+                get: function () {
+                    return this.urls ? this.selectedUrls.length == this.urls.length : false;
                 },
-                {
-                    title: 'Item 2.2',
-                    children: [
-                        {
-                            title: 'Item 2.2.1'
-                        },
-                        {
-                            title: 'Item 2.2.2'
-                        }
-                    ]
+                set: function (value) {
+                    var selected = [];
+
+                    if (value) {
+                        this.urls.forEach(function (url) {
+                            selected.push(url.id);
+                        });
+                    }
+
+                    this.selectedUrls = selected;
                 }
-            ]
+            }
         }
-    ];
+    });
 
     Vue.component('megamenu-list', {
         template: '#js-megamenu-list-template',
@@ -81,7 +138,30 @@
     new Vue({
         el: '#app',
         data: {
-            menuItems: menuItems
+            menuItems: [
+                {
+                    title: 'Item 1'
+                },
+                {
+                    title: 'Item 2',
+                    children: [
+                        {
+                            title: 'Item 2.1'
+                        },
+                        {
+                            title: 'Item 2.2',
+                            children: [
+                                {
+                                    title: 'Item 2.2.1'
+                                },
+                                {
+                                    title: 'Item 2.2.2'
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
         },
         methods: {
             addItem: function() {
