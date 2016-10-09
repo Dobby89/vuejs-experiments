@@ -7,25 +7,13 @@
 <div id="app">
 
     <url-list :urls="[
-        {
-            id: 1,
-            url: 'url-slug-1'
-        },
-        {
-            id: 2,
-            url: 'url-slug-2'
-        }
+        { id: 1, title: 'URL 1', url: 'url-slug-1', },
+        { id: 2, title: 'URL 2', url: 'url-slug-2' }
     ]"></url-list>
 
     <url-list :urls="[
-        {
-            id: 3,
-            url: 'url-slug-3'
-        },
-        {
-            id: 4,
-            url: 'url-slug-4'
-        }
+        { id: 3, title: 'URL 3', url: 'url-slug-3' },
+        { id: 4, title: 'URL 4', url: 'url-slug-4' }
     ]"></url-list>
 
     <div class="js-menu-builder">
@@ -86,11 +74,16 @@
         methods: {
             addUrl: function () {
 
-//                var selectedUrls = [];
-//                selectedUrls = this.urls.filter(function(url) {
-//                    return url.checked;
-//                });
-//                console.log(selectedUrls.length);
+                var vm = this; // So we can reference the vue model as "vm" within the .filter
+                var urlsToAdd = [];
+                urlsToAdd = this.urls.filter(function(url) {
+                    return vm.selectedUrls.indexOf(url.id) !== -1 ? true : false;
+                });
+                console.log(urlsToAdd);
+
+                urlsToAdd.forEach(function(url) {
+                    vm.$parent.menuItems.push(url);
+                });
             },
         },
         computed: {
@@ -98,11 +91,11 @@
                 get: function () {
                     return this.urls ? this.selectedUrls.length == this.urls.length : false;
                 },
-                set: function (value) {
+                set: function(value) {
                     var selected = [];
 
                     if (value) {
-                        this.urls.forEach(function (url) {
+                        this.urls.forEach(function(url) {
                             selected.push(url.id);
                         });
                     }
