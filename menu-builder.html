@@ -131,30 +131,21 @@
     new Vue({
         el: '#app',
         data: {
-            menuItems: [
-                {
-                    title: 'Item 1'
-                },
-                {
-                    title: 'Item 2',
-                    children: [
-                        {
-                            title: 'Item 2.1'
-                        },
-                        {
-                            title: 'Item 2.2',
-                            children: [
-                                {
-                                    title: 'Item 2.2.1'
-                                },
-                                {
-                                    title: 'Item 2.2.2'
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
+            menuItems: [{
+                title: 'Item 1'
+            }, {
+                title: 'Item 2',
+                children: [{
+                    title: 'Item 2.1'
+                }, {
+                    title: 'Item 2.2',
+                    children: [{
+                        title: 'Item 2.2.1'
+                    }, {
+                        title: 'Item 2.2.2'
+                    }]
+                }]
+            }]
         },
         methods: {
             addItem: function() {
