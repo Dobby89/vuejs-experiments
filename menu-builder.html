@@ -28,9 +28,9 @@
 <template id="js-url-list-template">
     <div>
         <input type="search" placeholder="Filter Links" v-model="pageFilter">
-        <div v-for="url in urls" v-if="!url.hidden">
+        <div v-for="(url, index) in urls" v-if="!url.hidden">
             <label>
-                <input type="checkbox" :value="url.id" v-model="selectedUrls">
+                <input type="checkbox" :value="index" v-model="selectedUrls">
                 {{ url.url }}
             </label>
         </div>
@@ -56,7 +56,7 @@
     </ol>
 </template>
 
-<script src="js/vue.js"></script>
+<script src="js/vue.2.0.1.min.js"></script>
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="//code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
 <script src="js/jquery.mjs.nestedSortable.js"></script>
@@ -76,8 +76,8 @@
 
                 var vm = this; // So we can reference the vue model as "vm" within the .filter
                 var urlsToAdd = [];
-                urlsToAdd = this.urls.filter(function(url) {
-                    return vm.selectedUrls.indexOf(url.id) !== -1 ? true : false;
+                urlsToAdd = this.urls.filter(function(url, index) {
+                    return vm.selectedUrls.indexOf(index) > -1 ? true : false;
                 });
                 console.log(urlsToAdd);
 
@@ -95,8 +95,8 @@
                     var selected = [];
 
                     if (value) {
-                        this.urls.forEach(function(url) {
-                            selected.push(url.id);
+                        this.urls.forEach(function(url, index) {
+                            selected.push(index);
                         });
                     }
 
@@ -124,7 +124,7 @@
                     }
                 }
 
-                this.items.$remove(item);
+                this.items.splice(itemIndex, 1);
             },
         }
     });
@@ -154,7 +154,7 @@
                 this.menuItems.push(newItem);
             },
         },
-        ready() {
+        mounted: function() {
             var vm = this;
             $('.js-menu-builder > ol').nestedSortable({
                 handle: 'div',
