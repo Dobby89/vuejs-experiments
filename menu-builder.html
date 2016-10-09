@@ -39,7 +39,7 @@
             <input type="checkbox" v-model="selectAll">
             Select All
         </label>
-        <button @click="addUrl">Add Selected</button>
+        <button @click="addSelectedUrls">Add Selected</button>
         {{ selectedUrls }}
     </div>
 </template>
@@ -72,7 +72,7 @@
             }
         },
         methods: {
-            addUrl: function () {
+            addSelectedUrls: function () {
 
                 var vm = this; // So we can reference the vue model as "vm" within the .filter
                 var urlsToAdd = [];
