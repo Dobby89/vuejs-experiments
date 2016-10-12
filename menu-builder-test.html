@@ -1,0 +1,102 @@
+<html>
+<head>
+
+</head>
+<body>
+
+<div id="app" class="todo">
+    <ul id="ex-sortable">
+        <li v-component="my-sortable" v-with="model: list" class="todo-categ"></li>
+    </ul>
+</div>
+
+<script type="text/x-template" id="sort-template">
+    <div data-id="{{ model.id }}">{{model.name}}</div>
+    <ul data-id="{{ model.id }}">
+        <li class="todo-categ" v-repeat="model: model.children" v-component="my-sortable"></li>
+    </ul>
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/0.11.10/vue.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="//code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
+<script src="js/jquery.mjs.nestedSortable.js"></script>
+<script>
+
+    var list =  { id: 0, name: 'tree', children:
+            [{'id' : '1', 'name' : 'Test', 'children' : []},
+                {'id' : '2', 'name' : 'Test2', 'children' : []},
+                {'id' : '3', 'name' : 'Test3', 'children' : [
+                    {'id' : '4', 'name' : 'Child', 'children' : []},
+                    {'id' : '5', 'name' : 'Child2', 'children' : []}
+                ]}]
+    };
+
+    var oldParent = null;
+    var oldIndex = null;
+
+    Vue.component('my-sortable', {
+        template: "#sort-template"
+    });
+
+    var v = new Vue({
+        el: '#ex-sortable',
+        data: {
+            list: list,
+            idBeingSorted: 0
+        }
+    });
+
+    function getObjFromTree(node, id)   // get obj from vue data in nested tree, from data-id
+    {
+        if(node.id == id)
+            return node;
+
+        if(node.children.length > 0)
+        {
+            for(var i=0; i<node.children.length; i++)
+            {
+                obj = getObjFromTree(node.children[i], id);
+                if(obj !== null)
+                    return obj;
+            }
+        }
+        return null;
+    }
+
+    $(document).ready(function(){
+        $('#ex-sortable').nestedSortable({
+            handle: 'div',
+            items: 'li',
+            toleranceElement: 'div',
+            listType : 'ul',
+            protectRoot: true,
+            start: function(e, ui)
+            {
+                oldIndex = ui.item.index();
+                oldParent = ui.item.parent()[0].attributes[0].value;    // get parent <ul data-id>
+            },
+            stop: function(e, ui)
+            {
+                var id = ui.item[0].firstChild.attributes[0].nodeValue;
+                var obj = getObjFromTree(v.$data.list, id);
+                var parent = ui.item.parent();
+                var newPosition = ui.item.index();
+
+                // remove old
+                if(oldParent)
+                {
+                    var objOldParent = getObjFromTree(v.$data.list, oldParent);
+                    objOldParent.children.splice(oldIndex, 1);
+                }
+
+                // add New
+                var objNewParent = getObjFromTree(v.$data.list, parent[0].attributes[0].value);
+                objNewParent.children.splice(newPosition, 0, obj);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
