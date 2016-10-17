@@ -46,7 +46,7 @@
 
 <template id="js-megamenu-list-template">
     <ol>
-        <li v-for="(item, index) in items" v-bind:data-id="item.id">
+        <li v-for="(item, index) in items" v-bind:id="'item-' + item.id">
             <div>
                 {{ item.title }} ({{ item.id }})
                 <button @click="deleteItem(item)">Remove</button>
@@ -195,6 +195,8 @@
 //                    console.log(ui);
                 },
                 stop: function(e, ui) {
+                    console.log('stop');
+                    console.log($(this).nestedSortable('toArray'));
 //                    console.log('ui:');
 //                    console.log(ui);
 //                    console.log('ui.item');
