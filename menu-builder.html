@@ -186,6 +186,7 @@
             menuIdCounter = 0;
         },
         mounted: function() {
+            vm = this;
             $('.js-menu-builder > ol').nestedSortable({
                 handle: 'div',
                 items: 'li',
@@ -195,8 +196,14 @@
 //                    console.log(ui);
                 },
                 stop: function(e, ui) {
-                    console.log('stop');
-                    console.log($(this).nestedSortable('toArray'));
+//                    console.log('stop');
+//                    console.log($(this).nestedSortable('toArray'));
+//                    console.log($(this).nestedSortable('toHierarchy'));
+
+                    console.log(rebuildHierarchy($(this).nestedSortable('toHierarchy')))
+
+//                    console.log(vm.menuItems);
+
 //                    console.log('ui:');
 //                    console.log(ui);
 //                    console.log('ui.item');
@@ -220,6 +227,31 @@
             });
         }
     });
+
+    function rebuildHierarchy(hierarchyIn) {
+
+        var menuSnapShot = addItemsToMenuArray(hierarchyIn);
+
+        return menuSnapShot;
+    }
+
+    function addItemsToMenuArray(hierarchyIn) {
+
+        var menuItems = [];
+        hierarchyIn.forEach(function(item, index) {
+            var menuItem = [];
+            menuItem.id = item.id;
+
+            // TODO copy properties for menuItem "id" here
+
+            if (item.children) {
+                menuItem.children = addItemsToMenuArray(item.children);
+            }
+            menuItems.push(menuItem);
+        });
+
+        return menuItems;
+    }
 
     function assignIdsToMenuItems(menuItems) {
 
