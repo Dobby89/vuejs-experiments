@@ -7,13 +7,13 @@
 <div id="app">
 
     <url-list :urls="[
-        { id: 1, title: 'URL 1', url: 'url-slug-1', },
-        { id: 2, title: 'URL 2', url: 'url-slug-2' }
+        { title: 'URL 1', url: 'url-slug-1', },
+        { title: 'URL 2', url: 'url-slug-2' }
     ]"></url-list>
 
     <url-list :urls="[
-        { id: 3, title: 'URL 3', url: 'url-slug-3' },
-        { id: 4, title: 'URL 4', url: 'url-slug-4' }
+        { title: 'URL 3', url: 'url-slug-3' },
+        { title: 'URL 4', url: 'url-slug-4' }
     ]"></url-list>
 
     <div class="js-menu-builder">
@@ -46,7 +46,7 @@
 
 <template id="js-megamenu-list-template">
     <ol>
-        <li v-for="item in items">
+        <li v-for="(item, index) in items" v-bind:data-id="item.id">
             <div>
                 {{ item.title }}
                 <button @click="deleteItem(item)">Remove</button>
@@ -56,7 +56,7 @@
     </ol>
 </template>
 
-<script src="js/vue.2.0.1.min.js"></script>
+<script src="js/vue.2.0.1.js"></script>
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="//code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
 <script src="js/jquery.mjs.nestedSortable.js"></script>
@@ -114,6 +114,8 @@
 
                 var itemIndex = this.items.indexOf(item);
 
+                this.items.splice(itemIndex, 1);
+
                 if (item.children) {
 
                     var itemChildren = item.children.reverse();
@@ -124,10 +126,11 @@
                     }
                 }
 
-                this.items.splice(itemIndex, 1);
+//                this.items.splice(itemIndex, 1);
             },
         }
     });
+
     new Vue({
         el: '#app',
         data: {
@@ -140,9 +143,19 @@
                 }, {
                     title: 'Item 2.2',
                     children: [{
-                        title: 'Item 2.2.1'
+                        title: 'Item 2.2.1',
+                        children: [{
+                            title: 'Item 2.2.1.1'
+                        }, {
+                            title: 'Item 2.2.1.2'
+                        }]
                     }, {
-                        title: 'Item 2.2.2'
+                        title: 'Item 2.2.2',
+                        children: [{
+                            title: 'Item 2.2.2.1'
+                        }, {
+                            title: 'Item 2.2.2.2'
+                        }]
                     }]
                 }]
             }]
@@ -154,8 +167,10 @@
                 this.menuItems.push(newItem);
             },
         },
+        created: function() {
+            assignIdsToMenuItems(this.menuItems);
+        },
         mounted: function() {
-            var vm = this;
             $('.js-menu-builder > ol').nestedSortable({
                 handle: 'div',
                 items: 'li',
@@ -166,6 +181,21 @@
             });
         }
     });
+
+    var menuIdCounter = 0;
+    function assignIdsToMenuItems(menuItems) {
+
+        menuItems.forEach(function(item) {
+
+            item['id'] = menuIdCounter;
+
+            menuIdCounter++;
+
+            if (item.children) {
+                assignIdsToMenuItems(item.children);
+            }
+        });
+    }
 
 </script>
 
