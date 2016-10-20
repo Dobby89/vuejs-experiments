@@ -140,7 +140,7 @@
     });
 
     var menuIdCounter = 0;
-    new Vue({
+    var menuApp = new Vue({
         el: '#app',
         data: {
             menuItems: [{
@@ -200,7 +200,7 @@
 //                    console.log($(this).nestedSortable('toArray'));
 //                    console.log($(this).nestedSortable('toHierarchy'));
 
-                    console.log(rebuildHierarchy($(this).nestedSortable('toHierarchy')))
+                    rebuildHierarchy($(this).nestedSortable('toHierarchy'));
 
 //                    console.log(vm.menuItems);
 
@@ -243,6 +243,9 @@
             menuItem.id = item.id;
 
             // TODO copy properties for menuItem "id" here
+            console.log(item.id);
+            var foundItem = filterByProperty(menuApp.menuItems, 'id', item.id, 'main');
+            console.log(foundItem);
 
             if (item.children) {
                 menuItem.children = addItemsToMenuArray(item.children);
@@ -251,6 +254,28 @@
         });
 
         return menuItems;
+    }
+
+    function filterByProperty(arr, prop, value, caller) {
+
+        console.log(caller);
+
+        var itemLeaf;
+        for (var i = 0, len = arr.length; i < len; i++) {
+            console.log('loop: ' + i + ' (' + arr[i].title +')');
+            if (arr[i][prop] == value) {
+                console.log('found: ' + arr[i].title);
+                itemLeaf = arr[i];
+            } else if (!itemLeaf && arr[i]['children']) {
+                console.log('' + arr[i].title + ' has children');
+                itemLeaf = filterByProperty(arr[i]['children'], prop, value, 'recursion');
+            }
+        }
+
+        console.log('returning with: ' + itemLeaf.title + ' while looking for: ' + value);
+        console.log('');
+
+        return itemLeaf;
     }
 
     function assignIdsToMenuItems(menuItems) {
