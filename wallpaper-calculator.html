@@ -8,10 +8,9 @@
 
     <!--http://vuejs.org/guide/forms.html#Select-Options-->
 
-    <select v-model="selectedUnit">
+    <select v-model="selectedUnit" @change="calculateRolls">
         <option v-for="unit in units" :selected="unit.selected" :value="$index">{{ unit.optionTitle }}</option>
     </select>
-    {{ selectedUnit }}
 
     <hr>
 
@@ -36,7 +35,7 @@
 
     <hr>
 
-    <div>You will need {{ numRolls }} rolls</div>
+    <div v-if="numRolls"><strong>You will need {{ numRolls }} rolls</strong></div>
 </div>
 
 <script src="js/vue.js"></script>
@@ -78,12 +77,12 @@
                 for (var i=0; i<this.areasToCover.length; i++) {
                     areaToCover += (this.areasToCover[i].length * this.areasToCover[i].height);
                 }
+
                 this.areaToCover = areaToCover;
 
                 for (var i=0; i<this.areasToExclude.length; i++) {
                     this.areaToExclude += (this.areasToExclude[i].value);
                 }
-                console.log(this.areaToExclude);
 
                 this.coverRequired = this.areaToCover - this.areaToExclude;
 
